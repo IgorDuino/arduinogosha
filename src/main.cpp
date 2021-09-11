@@ -333,8 +333,4 @@ void loop()
     strData = "";
     recievedFlag = false;
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> bec509921902c55e75fc8bfd780b269198f0a83b

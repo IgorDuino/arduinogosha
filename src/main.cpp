@@ -266,7 +266,7 @@ void loop()
         body_x = getValue(strData, ';', 1).toFloat();
         body_y = getValue(strData, ';', 2).toFloat();
 
-        Serial.println(body_y);
+        Serial.println(getValue(strData, ';', 1));
 
         body_y = body_y * 100;
         body_x = body_x * -100;

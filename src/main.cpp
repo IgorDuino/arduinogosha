@@ -27,7 +27,7 @@ boolean recievedFlag;
 long int timer_led;
 long int timer_check_battery;
 
-int battery_check_period = 5000;
+int battery_check_period = 10000;
 
 bool rainbow = 0;
 
@@ -272,10 +272,10 @@ void loop()
         read_holls();
 
         String holl_data_str = "";
-        holl_data_str += "HEAD_1 - " + String(holl_1_1) + "  " + String(holl_1_2) + " and ";
-        holl_data_str += "HEAD_2 - " + String(holl_2_1) + "  " + String(holl_2_2) + " and ";
-        holl_data_str += "HEAD_3 - " + String(holl_3_1) + "  " + String(holl_3_2) + " and ";
-        holl_data_str += "HEAD_4 - " + String(holl_4_1) + "  " + String(holl_4_2);
+        holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
+        holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
+        holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
+        holl_data_str += String(holl_4_1) + "  " + String(holl_4_2);
 
         Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
         Serial.print(holl_data_str);
@@ -306,7 +306,6 @@ void loop()
         head_y = map(head_y, -100, 100, -255, 255);
 
         head_left_right(head_x);
-        move_head(head_y);
       }
       else if (state == "l")
       {
@@ -331,6 +330,14 @@ void loop()
         {
           right_ratio = getValue(strData, ';', 2).toFloat();
         }
+      }
+      if (state == "mh")
+      {
+        head_forward_back(head_y);
+      }
+      else if (state == "m")
+      {
+        head_left_right(head_y);
       }
     }
     strData = "";

@@ -247,11 +247,11 @@ void loop()
   if (millis() - timer_check_battery >= battery_check_period)
   {
     battery_val = analogRead(BATTERY_PIN);
-    // battery_val = map(battery_val, 0, 1023, 0, 100);
+    battery_val = map(battery_val, 760, 1023, 0, 100);
 
     Serial.print("{\"to\": \"admin\", \"type\":\"bat\", \"data\": \"");
     Serial.print(battery_val);
-    Serial.println("\"}");
+    Serial.println("%\"}");
 
     timer_check_battery = millis();
   }

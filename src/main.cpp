@@ -27,7 +27,7 @@ boolean recievedFlag;
 long int timer_led;
 long int timer_check_battery;
 
-int battery_check_period = 50000;
+int battery_check_period = 5000;
 
 bool rainbow = 0;
 
@@ -89,7 +89,6 @@ void rainbow_fn()
     if (e > 765)
       e = 1;
   }
-  set_led(r, g, b);
 }
 
 String getValue(String data, char separator, int index)

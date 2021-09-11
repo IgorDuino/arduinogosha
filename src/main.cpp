@@ -272,11 +272,9 @@ void loop()
         read_holls();
 
         String holl_data_str = "";
-        holl_data_str += "LM -     " + String(holl_left_1) + "  " + String(holl_left_2) + "and ";
-        holl_data_str += "RM -     " + String(holl_right_1) + "  " + String(holl_right_2) + "and ";
-        holl_data_str += "HEAD_1 - " + String(holl_1_1) + "  " + String(holl_1_2) + "and ";
-        holl_data_str += "HEAD_2 - " + String(holl_2_1) + "  " + String(holl_2_2) + "and ";
-        holl_data_str += "HEAD_3 - " + String(holl_3_1) + "  " + String(holl_3_2) + "and ";
+        holl_data_str += "HEAD_1 - " + String(holl_1_1) + "  " + String(holl_1_2) + " and ";
+        holl_data_str += "HEAD_2 - " + String(holl_2_1) + "  " + String(holl_2_2) + " and ";
+        holl_data_str += "HEAD_3 - " + String(holl_3_1) + "  " + String(holl_3_2) + " and ";
         holl_data_str += "HEAD_4 - " + String(holl_4_1) + "  " + String(holl_4_2);
 
         Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");

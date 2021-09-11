@@ -263,9 +263,10 @@ void loop()
       String state = getValue(strData, ';', 0);
       if (state == "m" || state == "mh")
       {
+        body_x = getValue(strData, ';', 1).toFloat();
+        body_y = getValue(strData, ';', 2).toFloat();
+
         Serial.println(body_y);
-        body_x = getValue(strData, ';', 1).toInt();
-        body_y = getValue(strData, ';', 2).toInt();
 
         body_y = body_y * 100;
         body_x = body_x * -100;
@@ -279,8 +280,8 @@ void loop()
         motorL.setSpeed(dutyL * 0.35);
         motorR.setSpeed(dutyR * 0.35 * right_ratio);
 
-        head_x = getValue(strData, ';', 3).toInt();
-        head_y = getValue(strData, ';', 4).toInt();
+        head_x = getValue(strData, ';', 3).toFloat();
+        head_y = getValue(strData, ';', 4).toFloat();
 
         head_y = head_y * 100;
         head_x = head_x * -100;

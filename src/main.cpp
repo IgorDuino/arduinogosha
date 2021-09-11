@@ -1,4 +1,3 @@
-// pc
 #include <Arduino.h>
 #include "GyverMotor.h"
 #include <microLED.h>
@@ -30,21 +29,14 @@ long int timer_check_battery;
 
 bool rainbow = 0;
 
-int r = 255; // Красный горит
-int b = 0;   // Синий потушен
-int g = 0;   // Зелёный потушен
+int r = 255;
+int b = 0;
+int g = 0;
 
 int holl_1_1, holl_1_2, holl_2_1, holl_2_2, holl_3_1, holl_3_2, holl_4_1, holl_4_2;
 int holl_left_1, holl_left_2, holl_right_1, holl_right_2;
 int battery_val;
-
-char floatbufVar_body_x[32];
-char floatbufVar_body_y[32];
-char floatbufVar_head_x[32];
-char floatbufVar_head_y[32];
-char floatbufVar_r[32];
-char floatbufVar_g[32];
-char floatbufVar_b[32];
+float right_ratio = 0.6648;
 
 float body_x, body_y, head_x, head_y;
 
@@ -94,7 +86,7 @@ void ledManager()
     e++;
     if (e > 765)
       e = 1;
-  } // конец бывшего цикла for
+  }
 }
 
 String getValue(String data, char separator, int index)
@@ -163,6 +155,29 @@ void head_forward_back(int val)
   }
 }
 
+void move_head(int val)
+{
+  if (val == 0)
+  {
+    motorHead1.setMode(STOP);
+    motorHead4.setMode(STOP);
+
+    motorHead2.setMode(STOP);
+  }
+  else
+  {
+    motorHead1.setMode(AUTO);
+    motorHead4.setMode(AUTO);
+
+    motorHead2.setMode(AUTO);
+
+    motorHead1.setSpeed(val / 2);
+    motorHead4.setSpeed(val / -2);
+
+    motorHead2.setSpeed(val / -2);
+  }
+}
+
 void setup()
 {
   Serial.begin(9600);
@@ -212,11 +227,11 @@ void loop()
   if (millis() - timer_check_battery >= 4000)
   {
     battery_val = analogRead(BATTERY_PIN);
-    battery_val = map(battery_val, 0, 1023, 0, 100);
+    // battery_val = map(battery_val, 0, 1023, 0, 100);
 
     Serial.print("Bat: ");
     Serial.println(battery_val);
-    
+
     timer_check_battery = millis();
   }
 
@@ -248,17 +263,8 @@ void loop()
       String state = getValue(strData, ';', 0);
       if (state == "m" || state == "mh")
       {
-        String body_x_str = getValue(strData, ';', 1);
-        String body_y_str = getValue(strData, ';', 2);
-
-        String head_x_str = getValue(strData, ';', 3);
-        String head_y_str = getValue(strData, ';', 4);
-
-        body_x_str.toCharArray(floatbufVar_body_x, sizeof(floatbufVar_body_x));
-        body_x = atof(floatbufVar_body_x);
-
-        body_y_str.toCharArray(floatbufVar_body_y, sizeof(floatbufVar_body_y));
-        body_y = atof(floatbufVar_body_y);
+        body_x = getValue(strData, ';', 1).toInt();
+        body_y = getValue(strData, ';', 2).toInt();
 
         body_y = body_y * 100;
         body_x = body_x * -100;
@@ -270,13 +276,10 @@ void loop()
         int dutyR = body_y + body_x;
 
         motorL.setSpeed(dutyL * 0.35);
-        motorR.setSpeed(dutyR * 0.35 * 0.6648);
+        motorR.setSpeed(dutyR * 0.35 * right_ratio);
 
-        head_x_str.toCharArray(floatbufVar_head_x, sizeof(floatbufVar_head_x));
-        head_x = atof(floatbufVar_head_x);
-
-        head_y_str.toCharArray(floatbufVar_head_y, sizeof(floatbufVar_head_y));
-        head_y = atof(floatbufVar_head_y);
+        head_x = getValue(strData, ';', 3).toInt();
+        head_y = getValue(strData, ';', 4).toInt();
 
         head_y = head_y * 100;
         head_x = head_x * -100;
@@ -285,49 +288,23 @@ void loop()
         head_y = map(head_y, -100, 100, -255, 255);
 
         head_left_right(head_x);
-
-        Serial.print("HOLL: ");
-        Serial.print(holl_1_1);
-        Serial.print(" ");
-        Serial.print(holl_1_1);
-        Serial.print(" ");
-        Serial.print(holl_2_1);
-        Serial.print(" ");
-        Serial.print(holl_2_2);
-        Serial.print(" ");
-        Serial.print(holl_3_1);
-        Serial.print(" ");
-        Serial.print(holl_3_2);
-        Serial.print(" ");
-        Serial.print(holl_4_1);
-        Serial.print(" ");
-        Serial.print(holl_4_2);
-        Serial.print(" ");
+        move_head(head_y);
       }
-
       else if (state == "l")
       {
-        String ledr = getValue(strData, ';', 1);
-        String ledg = getValue(strData, ';', 2);
-        String ledb = getValue(strData, ';', 3);
-
-        ledr.toCharArray(floatbufVar_r, sizeof(floatbufVar_r));
-        ledg.toCharArray(floatbufVar_g, sizeof(floatbufVar_g));
-        ledb.toCharArray(floatbufVar_b, sizeof(floatbufVar_b));
-
-        int ledRint = atof(floatbufVar_r);
-        int ledGint = atof(floatbufVar_g);
-        int ledBint = atof(floatbufVar_b);
+        int ledRint = getValue(strData, ';', 1).toInt();
+        int ledGint = getValue(strData, ';', 2).toInt();
+        int ledBint = getValue(strData, ';', 3).toInt();
 
         set_led(ledRint, ledGint, ledBint);
       }
-      if (state == "m")
+      else if (state == "set")
       {
-        head_up_down(head_y);
-      }
-      if (state == "mh")
-      {
-        head_forward_back(head_y);
+        String var_name = getValue(strData, ';', 1);
+        if (var_name == "right_ratio")
+        {
+          right_ratio = getValue(strData, ';', 2).toFloat();
+        }
       }
     }
     strData = "";

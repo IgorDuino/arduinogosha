@@ -263,6 +263,7 @@ void loop()
       String state = getValue(strData, ';', 0);
       if (state == "m" || state == "mh")
       {
+        Serial.println(body_y);
         body_x = getValue(strData, ';', 1).toInt();
         body_y = getValue(strData, ';', 2).toInt();
 

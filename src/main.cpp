@@ -337,7 +337,7 @@ void loop()
       }
       else if (state == "m")
       {
-        head_left_right(head_y);
+        head_up_down(head_y);
       }
     }
     strData = "";

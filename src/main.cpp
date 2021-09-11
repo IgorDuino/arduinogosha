@@ -27,6 +27,8 @@ boolean recievedFlag;
 long int timer_led;
 long int timer_check_battery;
 
+int battery_check_period = 50000;
+
 bool rainbow = 0;
 
 int r = 255;
@@ -56,7 +58,7 @@ void set_led(int rq, int gq, int bq)
   led.show();
 }
 
-void ledManager()
+void rainbow_fn()
 {
   static unsigned long timestamp = millis();
   static int e = 1;
@@ -70,7 +72,7 @@ void ledManager()
       r++;
       b--;
     }
-    if (e > 255 && e <= 510)
+    if (e > 255 and e <= 510)
     {
       b++;
       g--;
@@ -87,6 +89,7 @@ void ledManager()
     if (e > 765)
       e = 1;
   }
+  set_led(r, g, b);
 }
 
 String getValue(String data, char separator, int index)
@@ -95,9 +98,9 @@ String getValue(String data, char separator, int index)
   int strIndex[] = {0, -1};
   int maxIndex = data.length() - 1;
 
-  for (int i = 0; i <= maxIndex && found <= index; i++)
+  for (int i = 0; i <= maxIndex and found <= index; i++)
   {
-    if (data.charAt(i) == separator || i == maxIndex)
+    if (data.charAt(i) == separator or i == maxIndex)
     {
       found++;
       strIndex[0] = strIndex[1] + 1;
@@ -171,11 +174,29 @@ void move_head(int val)
 
     motorHead2.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 2);
-    motorHead4.setSpeed(val / -2);
+    motorHead1.setSpeed(val / 3);
+    motorHead4.setSpeed(val / -3);
 
     motorHead2.setSpeed(val / -2);
   }
+}
+
+void read_holls()
+{
+  holl_1_1 = digitalRead(HOLL_1_1_PIN);
+  holl_1_2 = digitalRead(HOLL_1_2_PIN);
+  holl_2_1 = digitalRead(HOLL_2_1_PIN);
+  holl_2_2 = digitalRead(HOLL_2_2_PIN);
+  holl_3_1 = digitalRead(HOLL_3_1_PIN);
+  holl_3_2 = digitalRead(HOLL_3_2_PIN);
+  holl_4_1 = digitalRead(HOLL_4_1_PIN);
+  holl_4_2 = digitalRead(HOLL_4_2_PIN);
+
+  holl_left_1 = digitalRead(HOLL_LEFT_1_PIN);
+  holl_left_2 = digitalRead(HOLL_LEFT_2_PIN);
+
+  holl_right_1 = digitalRead(HOLL_RIGHT_1_PIN);
+  holl_right_2 = digitalRead(HOLL_RIGHT_2_PIN);
 }
 
 void setup()
@@ -221,34 +242,20 @@ void loop()
 {
   if (rainbow)
   {
-    ledManager();
+    rainbow_fn();
   }
 
-  if (millis() - timer_check_battery >= 4000)
+  if (millis() - timer_check_battery >= battery_check_period)
   {
     battery_val = analogRead(BATTERY_PIN);
     // battery_val = map(battery_val, 0, 1023, 0, 100);
 
-    Serial.print("Bat: ");
-    Serial.println(battery_val);
+    Serial.print("{\"to\": \"admin\", \"type\":\"bat\", \"data\": \"");
+    Serial.print(battery_val);
+    Serial.println("\"}");
 
     timer_check_battery = millis();
   }
-
-  holl_1_1 = digitalRead(HOLL_1_1_PIN);
-  holl_1_2 = digitalRead(HOLL_1_2_PIN);
-  holl_2_1 = digitalRead(HOLL_2_1_PIN);
-  holl_2_2 = digitalRead(HOLL_2_2_PIN);
-  holl_3_1 = digitalRead(HOLL_3_1_PIN);
-  holl_3_2 = digitalRead(HOLL_3_2_PIN);
-  holl_4_1 = digitalRead(HOLL_4_1_PIN);
-  holl_4_2 = digitalRead(HOLL_4_2_PIN);
-
-  holl_left_1 = digitalRead(HOLL_LEFT_1_PIN);
-  holl_left_2 = digitalRead(HOLL_LEFT_2_PIN);
-
-  holl_right_1 = digitalRead(HOLL_RIGHT_1_PIN);
-  holl_right_2 = digitalRead(HOLL_RIGHT_2_PIN);
 
   while (Serial.available() > 0)
   {
@@ -261,12 +268,24 @@ void loop()
     if (strData != "")
     {
       String state = getValue(strData, ';', 0);
-      if (state == "m" || state == "mh")
+      if (state == "m" or state == "mh")
       {
+        read_holls();
+
+        String holl_data_str = "";
+        holl_data_str += "LM -     " + String(holl_left_1) + "  " + String(holl_left_2) + "and ";
+        holl_data_str += "RM -     " + String(holl_right_1) + "  " + String(holl_right_2) + "and ";
+        holl_data_str += "HEAD_1 - " + String(holl_1_1) + "  " + String(holl_1_2) + "and ";
+        holl_data_str += "HEAD_2 - " + String(holl_2_1) + "  " + String(holl_2_2) + "and ";
+        holl_data_str += "HEAD_3 - " + String(holl_3_1) + "  " + String(holl_3_2) + "and ";
+        holl_data_str += "HEAD_4 - " + String(holl_4_1) + "  " + String(holl_4_2);
+
+        Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
+        Serial.print(holl_data_str);
+        Serial.println("\"}");
+
         body_x = getValue(strData, ';', 1).toFloat();
         body_y = getValue(strData, ';', 2).toFloat();
-
-        Serial.println(getValue(strData, ';', 1));
 
         body_y = body_y * 100;
         body_x = body_x * -100;
@@ -298,7 +317,15 @@ void loop()
         int ledGint = getValue(strData, ';', 2).toInt();
         int ledBint = getValue(strData, ';', 3).toInt();
 
-        set_led(ledRint, ledGint, ledBint);
+        if (ledRint == 666 and ledGint == 666 and ledBint == 666)
+        {
+          rainbow = true;
+        }
+        else
+        {
+          rainbow = false;
+          set_led(ledRint, ledGint, ledBint);
+        }
       }
       else if (state == "set")
       {

@@ -42,7 +42,7 @@ int battery_val;
 int center_pot_val = 560;
 int left_pot_val = 662;
 int right_pot_val = 445;
-int centering_speed = 75;
+int centering_speed = 200;
 bool is_centering = false;
 
 float right_ratio = 0.6648;

@@ -308,7 +308,6 @@ void loop()
       }
       else
       {
-
         head_left_right(map(-1 * centering_speed, -100, 100, -255, 255));
       }
     }

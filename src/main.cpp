@@ -302,13 +302,13 @@ void loop()
     bool is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
-      if (pot_val < center_pot_val)
+      if (pot_val > center_pot_val)
       {
-        head_left_right(map(centering_speed, -100, 100, -255, 255));
+        head_left_right(centering_speed);
       }
       else
       {
-        head_left_right(map(-1 * centering_speed, -100, 100, -255, 255));
+        head_left_right(-1 * centering_speed);
       }
     }
     else

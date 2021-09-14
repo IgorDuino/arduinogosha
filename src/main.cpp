@@ -129,8 +129,8 @@ void head_left_right(int val)
     motorHead1.setMode(AUTO);
     motorHead3.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 2);
-    motorHead3.setSpeed(val / -2);
+    motorHead1.setSmoothSpeed(val / 2);
+    motorHead3.setSmoothSpeed(val / -2);
   }
 }
 
@@ -143,7 +143,7 @@ void head_up_down(int val)
   else
   {
     motorHead2.setMode(AUTO);
-    motorHead2.setSpeed(val / -2);
+    motorHead2.setSmoothSpeed(val / -2);
   }
 }
 
@@ -159,8 +159,8 @@ void head_forward_back(int val)
     motorHead1.setMode(AUTO);
     motorHead4.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 2);
-    motorHead4.setSpeed(val / -2);
+    motorHead1.setSmoothSpeed(val / 2);
+    motorHead4.setSmoothSpeed(val / -2);
   }
 }
 
@@ -180,10 +180,10 @@ void move_head(int val)
 
     motorHead2.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 3);
-    motorHead4.setSpeed(val / -3);
+    motorHead1.setSmoothSpeed(val / 3);
+    motorHead4.setSmoothSpeed(val / -3);
 
-    motorHead2.setSpeed(val / -2);
+    motorHead2.setSmoothSpeed(val / -2);
   }
 }
 
@@ -226,12 +226,12 @@ void send_holls()
 void stop_all()
 {
   is_centering = false;
-  motorHead1.setSpeed(0);
-  motorHead2.setSpeed(0);
-  motorHead3.setSpeed(0);
-  motorHead4.setSpeed(0);
-  motorL.setSpeed(0);
-  motorR.setSpeed(0);
+  motorHead1.setSmoothSpeed(0);
+  motorHead2.setSmoothSpeed(0);
+  motorHead3.setSmoothSpeed(0);
+  motorHead4.setSmoothSpeed(0);
+  motorL.setSmoothSpeed(0);
+  motorR.setSmoothSpeed(0);
   /*
   motorHead1.setMode(STOP);
   motorHead2.setMode(STOP);
@@ -299,6 +299,8 @@ void loop()
   if (is_centering)
   {
     read_holls();
+    send_holls();
+
     bool is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
@@ -366,8 +368,8 @@ void loop()
         int dutyL = body_y - body_x;
         int dutyR = body_y + body_x;
 
-        motorL.setSpeed(dutyL * 0.35);
-        motorR.setSpeed(dutyR * 0.35 * right_ratio);
+        motorL.setSmoothSpeed(dutyL * 0.35);
+        motorR.setSmoothSpeed(dutyR * 0.35 * right_ratio);
 
         head_x = getValue(strData, ';', 3).toFloat();
         head_y = getValue(strData, ';', 4).toFloat();

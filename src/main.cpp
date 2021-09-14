@@ -39,7 +39,12 @@ int holl_1_1, holl_1_2, holl_2_1, holl_2_2, holl_3_1, holl_3_2, holl_4_1, holl_4
 int holl_left_1, holl_left_2, holl_right_1, holl_right_2, pot_val;
 int battery_val;
 
-int center_pot_val;
+int center_pot_val = 560;
+int left_pot_val = 662;
+int right_pot_val = 445;
+int centering_speed = 75;
+bool is_centering = false;
+
 float right_ratio = 0.6648;
 
 float body_x, body_y, head_x, head_y;
@@ -263,6 +268,19 @@ void loop()
   {
     rainbow_fn();
   }
+  if (is_centering)
+  {
+    read_holls();
+    bool is_on_center = abs(pot_val - center_pot_val) < 10;
+    if (!is_on_center)
+    {
+      head_left_right(centering_speed * (pot_val < center_pot_val ? -1 : 1));
+    }
+    else
+    {
+      is_centering = false;
+    }
+  }
 
   if (millis() - timer_check_battery >= battery_check_period)
   {
@@ -347,6 +365,7 @@ void loop()
       }
       else if (state == "center")
       {
+        is_centering = true;
       }
       else if (state == "holls")
       {

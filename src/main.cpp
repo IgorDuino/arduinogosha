@@ -223,6 +223,27 @@ void send_holls()
   Serial.println("\"}");
 }
 
+void stop_aall()
+{
+  is_centering = false;
+  motorHead1.setMode(STOP);
+  motorHead2.setMode(STOP);
+  motorHead3.setMode(STOP);
+  motorHead4.setMode(STOP);
+  motorL.setMode(STOP);
+  motorR.setMode(STOP);
+}
+
+void set_auto_all()
+{
+  motorHead1.setMode(AUTO);
+  motorHead2.setMode(AUTO);
+  motorHead3.setMode(AUTO);
+  motorHead4.setMode(AUTO);
+  motorL.setMode(AUTO);
+  motorR.setMode(AUTO);
+}
+
 void setup()
 {
   Serial.begin(9600);
@@ -279,6 +300,7 @@ void loop()
     else
     {
       is_centering = false;
+      head_left_right(0);
     }
   }
 
@@ -305,79 +327,88 @@ void loop()
     if (strData != "")
     {
       String state = getValue(strData, ';', 0);
-      if (state == "m" or state == "mh")
+      if (state == "stopall")
       {
-        send_holls();
-
-        body_x = getValue(strData, ';', 1).toFloat();
-        body_y = getValue(strData, ';', 2).toFloat();
-
-        body_y = body_y * 100;
-        body_x = body_x * -100;
-
-        body_x = map(body_x, -100, 100, -255, 255);
-        body_y = map(body_y, -100, 100, -255, 255);
-
-        int dutyL = body_y - body_x;
-        int dutyR = body_y + body_x;
-
-        motorL.setSpeed(dutyL * 0.35);
-        motorR.setSpeed(dutyR * 0.35 * right_ratio);
-
-        head_x = getValue(strData, ';', 3).toFloat();
-        head_y = getValue(strData, ';', 4).toFloat();
-
-        head_y = head_y * 100;
-        head_x = head_x * -100;
-
-        head_x = map(head_x, -100, 100, -255, 255);
-        head_y = map(head_y, -100, 100, -255, 255);
-
-        head_left_right(head_x);
+        stop_aall();
       }
-      else if (state == "l")
+      else
       {
-        int ledRint = getValue(strData, ';', 1).toInt();
-        int ledGint = getValue(strData, ';', 2).toInt();
-        int ledBint = getValue(strData, ';', 3).toInt();
+        set_auto_all();
 
-        if (ledRint == 666 and ledGint == 666 and ledBint == 666)
+        if (state == "m" or state == "mh")
         {
-          rainbow = true;
+          send_holls();
+
+          body_x = getValue(strData, ';', 1).toFloat();
+          body_y = getValue(strData, ';', 2).toFloat();
+
+          body_y = body_y * 100;
+          body_x = body_x * -100;
+
+          body_x = map(body_x, -100, 100, -255, 255);
+          body_y = map(body_y, -100, 100, -255, 255);
+
+          int dutyL = body_y - body_x;
+          int dutyR = body_y + body_x;
+
+          motorL.setSpeed(dutyL * 0.35);
+          motorR.setSpeed(dutyR * 0.35 * right_ratio);
+
+          head_x = getValue(strData, ';', 3).toFloat();
+          head_y = getValue(strData, ';', 4).toFloat();
+
+          head_y = head_y * 100;
+          head_x = head_x * -100;
+
+          head_x = map(head_x, -100, 100, -255, 255);
+          head_y = map(head_y, -100, 100, -255, 255);
+
+          head_left_right(head_x);
         }
-        else
+        else if (state == "l")
         {
-          rainbow = false;
-          set_led(ledRint, ledGint, ledBint);
+          int ledRint = getValue(strData, ';', 1).toInt();
+          int ledGint = getValue(strData, ';', 2).toInt();
+          int ledBint = getValue(strData, ';', 3).toInt();
+
+          if (ledRint == 666 and ledGint == 666 and ledBint == 666)
+          {
+            rainbow = true;
+          }
+          else
+          {
+            rainbow = false;
+            set_led(ledRint, ledGint, ledBint);
+          }
         }
-      }
-      else if (state == "set")
-      {
-        String var_name = getValue(strData, ';', 1);
-        if (var_name == "right_ratio")
+        else if (state == "set")
         {
-          right_ratio = getValue(strData, ';', 2).toFloat();
+          String var_name = getValue(strData, ';', 1);
+          if (var_name == "right_ratio")
+          {
+            right_ratio = getValue(strData, ';', 2).toFloat();
+          }
+          else if (var_name == "center_pot_val")
+          {
+            center_pot_val = getValue(strData, ';', 2).toInt();
+          }
         }
-        else if (var_name == "center_pot_val")
+        else if (state == "center")
         {
-          center_pot_val = getValue(strData, ';', 2).toInt();
+          is_centering = true;
         }
-      }
-      else if (state == "center")
-      {
-        is_centering = true;
-      }
-      else if (state == "holls")
-      {
-        send_holls();
-      }
-      if (state == "mh")
-      {
-        head_forward_back(head_y);
-      }
-      else if (state == "m")
-      {
-        head_up_down(head_y);
+        else if (state == "holls")
+        {
+          send_holls();
+        }
+        if (state == "mh")
+        {
+          head_forward_back(head_y);
+        }
+        else if (state == "m")
+        {
+          head_up_down(head_y);
+        }
       }
     }
     strData = "";

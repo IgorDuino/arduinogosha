@@ -36,8 +36,10 @@ int b = 0;
 int g = 0;
 
 int holl_1_1, holl_1_2, holl_2_1, holl_2_2, holl_3_1, holl_3_2, holl_4_1, holl_4_2;
-int holl_left_1, holl_left_2, holl_right_1, holl_right_2;
+int holl_left_1, holl_left_2, holl_right_1, holl_right_2, pot_val;
 int battery_val;
+
+int center_pot_val;
 float right_ratio = 0.6648;
 
 float body_x, body_y, head_x, head_y;
@@ -196,6 +198,8 @@ void read_holls()
 
   holl_right_1 = digitalRead(HOLL_RIGHT_1_PIN);
   holl_right_2 = digitalRead(HOLL_RIGHT_2_PIN);
+
+  pot_val = analogRead(LEFT_RIGHT_POT_PIN);
 }
 
 void setup()
@@ -275,7 +279,8 @@ void loop()
         holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
         holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
         holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
-        holl_data_str += String(holl_4_1) + "  " + String(holl_4_2);
+        holl_data_str += String(holl_4_1) + "  " + String(holl_4_2) + " and pot ";
+        holl_data_str += String(pot_val);
 
         Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
         Serial.print(holl_data_str);
@@ -330,6 +335,13 @@ void loop()
         {
           right_ratio = getValue(strData, ';', 2).toFloat();
         }
+        else if (var_name == "center_pot_val")
+        {
+          center_pot_val = getValue(strData, ';', 2).toInt();
+        }
+      }
+      else if (state == "center")
+      {
       }
       if (state == "mh")
       {

@@ -202,6 +202,22 @@ void read_holls()
   pot_val = analogRead(LEFT_RIGHT_POT_PIN);
 }
 
+void send_holls()
+{
+  read_holls();
+
+  String holl_data_str = "";
+  holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
+  holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
+  holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
+  holl_data_str += String(holl_4_1) + "  " + String(holl_4_2) + " and pot ";
+  holl_data_str += String(pot_val);
+
+  Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
+  Serial.print(holl_data_str);
+  Serial.println("\"}");
+}
+
 void setup()
 {
   Serial.begin(9600);
@@ -273,18 +289,7 @@ void loop()
       String state = getValue(strData, ';', 0);
       if (state == "m" or state == "mh")
       {
-        read_holls();
-
-        String holl_data_str = "";
-        holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
-        holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
-        holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
-        holl_data_str += String(holl_4_1) + "  " + String(holl_4_2) + " and pot ";
-        holl_data_str += String(pot_val);
-
-        Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
-        Serial.print(holl_data_str);
-        Serial.println("\"}");
+        send_holls();
 
         body_x = getValue(strData, ';', 1).toFloat();
         body_y = getValue(strData, ';', 2).toFloat();
@@ -342,6 +347,10 @@ void loop()
       }
       else if (state == "center")
       {
+      }
+      else if (state == "holls")
+      {
+        send_holls();
       }
       if (state == "mh")
       {

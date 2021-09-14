@@ -274,7 +274,7 @@ void loop()
     bool is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
-      head_left_right(centering_speed * (pot_val < center_pot_val ? -1 : 1));
+      head_left_right(centering_speed * (pot_val < center_pot_val ? 1 : -1));
     }
     else
     {

@@ -226,12 +226,19 @@ void send_holls()
 void stop_all()
 {
   is_centering = false;
+  motorHead1.setSpeed(0);
+  motorHead2.setSpeed(0);
+  motorHead3.setSpeed(0);
+  motorHead4.setSpeed(0);
+  motorL.setSpeed(0);
+  motorR.setSpeed(0);
+  /*
   motorHead1.setMode(STOP);
   motorHead2.setMode(STOP);
   motorHead3.setMode(STOP);
   motorHead4.setMode(STOP);
   motorL.setMode(STOP);
-  motorR.setMode(STOP);
+  motorR.setMode(STOP);*/
 }
 
 void set_auto_all()

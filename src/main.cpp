@@ -42,8 +42,9 @@ int battery_val;
 int center_pot_val = 560;
 int left_pot_val = 662;
 int right_pot_val = 445;
-int centering_speed = 160;
+int centering_speed = 120;
 bool is_centering = false;
+bool is_on_center;
 
 float right_ratio = 0.6648;
 
@@ -223,12 +224,12 @@ void setup()
   motorHead2.setMode(AUTO);
   motorHead3.setMode(AUTO);
   motorHead4.setMode(AUTO);
-  /*
+
   motorHead1.setSmoothSpeed(40);
   motorHead2.setSmoothSpeed(40);
   motorHead3.setSmoothSpeed(40);
   motorHead4.setSmoothSpeed(40);
-*/
+
   motorL.setMinDuty(21);
   motorR.setMinDuty(21);
 
@@ -247,7 +248,7 @@ void loop()
   {
     send_holls();
     set_led(0, 255, 0);
-    bool is_on_center = abs(pot_val - center_pot_val) < 10;
+    is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
       if (pot_val > center_pot_val)
@@ -261,6 +262,7 @@ void loop()
     }
     else
     {
+      set_led(0, 191, 255);
       head_left_right(0);
       is_centering = false;
     }

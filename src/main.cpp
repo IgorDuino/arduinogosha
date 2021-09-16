@@ -120,72 +120,41 @@ String getValue(String data, char separator, int index)
 
 void head_left_right(int val)
 {
-  if (val == 0)
-  {
-    motorHead1.setMode(STOP);
-    motorHead3.setMode(STOP);
-  }
-  else
-  {
-    motorHead1.setMode(AUTO);
-    motorHead3.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 2);
-    motorHead3.setSpeed(val / -2);
-  }
+  motorHead1.setMode(AUTO);
+  motorHead3.setMode(AUTO);
+
+  motorHead1.setSpeed(val / 2);
+  motorHead3.setSpeed(val / -2);
 }
 
 void head_up_down(int val)
 {
-  if (val == 0)
-  {
-    motorHead2.setMode(STOP);
-  }
-  else
-  {
-    motorHead2.setMode(AUTO);
-    motorHead2.setSpeed(val / -2);
-  }
+  motorHead2.setMode(AUTO);
+  motorHead2.setSpeed(val / -2);
 }
 
 void head_forward_back(int val)
 {
-  if (val == 0)
-  {
-    motorHead1.setMode(STOP);
-    motorHead4.setMode(STOP);
-  }
-  else
-  {
-    motorHead1.setMode(AUTO);
-    motorHead4.setMode(AUTO);
+  motorHead1.setMode(AUTO);
+  motorHead4.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 2);
-    motorHead4.setSpeed(val / -2);
-  }
+  motorHead1.setSpeed(val / 2);
+  motorHead4.setSpeed(val / -2);
 }
 
 void move_head(int val)
 {
-  if (val == 0)
-  {
-    motorHead1.setMode(STOP);
-    motorHead4.setMode(STOP);
 
-    motorHead2.setMode(STOP);
-  }
-  else
-  {
-    motorHead1.setMode(AUTO);
-    motorHead4.setMode(AUTO);
+  motorHead1.setMode(AUTO);
+  motorHead4.setMode(AUTO);
 
-    motorHead2.setMode(AUTO);
+  motorHead2.setMode(AUTO);
 
-    motorHead1.setSpeed(val / 3);
-    motorHead4.setSpeed(val / -3);
+  motorHead1.setSpeed(val / 3);
+  motorHead4.setSpeed(val / -3);
 
-    motorHead2.setSpeed(val / -2);
-  }
+  motorHead2.setSpeed(val / -2);
 }
 
 void read_holls()
@@ -368,6 +337,14 @@ void loop()
         head_y = map(head_y, -100, 100, -255, 255);
 
         head_left_right(head_x);
+        if (state == "mh")
+        {
+          head_forward_back(head_y);
+        }
+        else if (state == "m")
+        {
+          head_up_down(head_y);
+        }
       }
       else if (state == "l")
       {
@@ -409,15 +386,7 @@ void loop()
       {
         send_holls();
       }
-      if (state == "mh")
-      {
-        head_forward_back(head_y);
-      }
-      else if (state == "m")
-      {
-        head_up_down(head_y);
-      }
-    }
+        }
     strData = "";
     recievedFlag = false;
   }

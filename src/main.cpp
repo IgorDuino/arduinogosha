@@ -120,37 +120,23 @@ String getValue(String data, char separator, int index)
 
 void head_left_right(int val)
 {
-
-  motorHead1.setMode(AUTO);
-  motorHead3.setMode(AUTO);
-
   motorHead1.setSpeed(val / 2);
   motorHead3.setSpeed(val / -2);
 }
 
 void head_up_down(int val)
 {
-  motorHead2.setMode(AUTO);
   motorHead2.setSpeed(val / -2);
 }
 
 void head_forward_back(int val)
 {
-  motorHead1.setMode(AUTO);
-  motorHead4.setMode(AUTO);
-
   motorHead1.setSpeed(val / 2);
   motorHead4.setSpeed(val / -2);
 }
 
 void move_head(int val)
 {
-
-  motorHead1.setMode(AUTO);
-  motorHead4.setMode(AUTO);
-
-  motorHead2.setMode(AUTO);
-
   motorHead1.setSpeed(val / 3);
   motorHead4.setSpeed(val / -3);
 
@@ -336,13 +322,16 @@ void loop()
         head_x = map(head_x, -100, 100, -255, 255);
         head_y = map(head_y, -100, 100, -255, 255);
 
-        head_left_right(head_x);
         if (state == "mh")
         {
+          head_left_right(head_x);
+
           head_forward_back(head_y);
         }
         else if (state == "m")
         {
+          head_left_right(head_x);
+
           head_up_down(head_y);
         }
       }
@@ -386,7 +375,7 @@ void loop()
       {
         send_holls();
       }
-        }
+    }
     strData = "";
     recievedFlag = false;
   }

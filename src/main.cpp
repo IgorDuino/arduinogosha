@@ -42,7 +42,7 @@ int battery_val;
 int center_pot_val = 560;
 int left_pot_val = 662;
 int right_pot_val = 445;
-int centering_speed = 30;
+int centering_speed = 160;
 bool is_centering = false;
 
 float right_ratio = 0.6648;
@@ -297,11 +297,11 @@ void loop()
     {
       if (pot_val > center_pot_val)
       {
-        head_left_right(centering_speed);
+        head_left_right(-centering_speed);
       }
       else
       {
-        head_left_right(-1 * centering_speed);
+        head_left_right(centering_speed);
       }
     }
     else

@@ -48,6 +48,7 @@ bool is_centering = false;
 float right_ratio = 0.6648;
 
 float body_x, body_y, head_x, head_y;
+String state;
 
 GMotor motorL(DRIVER3WIRE, 2, 3, 4, LOW);
 GMotor motorR(DRIVER3WIRE, 5, 6, 7, HIGH);
@@ -232,23 +233,6 @@ void stop_all()
   motorHead4.setSpeed(0);
   motorL.setSpeed(0);
   motorR.setSpeed(0);
-  /*
-  motorHead1.setMode(STOP);
-  motorHead2.setMode(STOP);
-  motorHead3.setMode(STOP);
-  motorHead4.setMode(STOP);
-  motorL.setMode(STOP);
-  motorR.setMode(STOP);*/
-}
-
-void set_auto_all()
-{
-  motorHead1.setMode(AUTO);
-  motorHead2.setMode(AUTO);
-  motorHead3.setMode(AUTO);
-  motorHead4.setMode(AUTO);
-  motorL.setMode(AUTO);
-  motorR.setMode(AUTO);
 }
 
 void setup()
@@ -306,9 +290,8 @@ void loop()
   }
   if (is_centering)
   {
-    read_holls();
     send_holls();
-
+    set_led(0, 255, 0);
     bool is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
@@ -323,8 +306,8 @@ void loop()
     }
     else
     {
-      is_centering = false;
       head_left_right(0);
+      is_centering = false;
     }
   }
 
@@ -348,18 +331,14 @@ void loop()
   }
   if (recievedFlag)
   {
+    state = "";
     if (strData != "")
     {
-      String state = getValue(strData, ';', 0);
+      state = getValue(strData, ';', 0);
       if (state == "stopall")
       {
         stop_all();
       }
-      else if (state == "set_auto_all")
-      {
-        set_auto_all();
-      }
-
       else if (state == "m" or state == "mh")
       {
         send_holls();
@@ -416,6 +395,10 @@ void loop()
         else if (var_name == "center_pot_val")
         {
           center_pot_val = getValue(strData, ';', 2).toInt();
+        }
+        else if (var_name == "centering_speed")
+        {
+          centering_speed = getValue(strData, ';', 2).toInt();
         }
       }
       else if (state == "center")

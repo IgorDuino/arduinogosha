@@ -149,8 +149,8 @@ void head_forward_back(int val)
 
 void move_head(int val)
 {
-  motorHead1.setSpeed(val / 3);
-  motorHead4.setSpeed(val / -3);
+  motorHead1.setSpeed(val / 4);
+  motorHead4.setSpeed(val / -4);
 
   motorHead2.setSpeed(val / -2);
 }
@@ -341,6 +341,9 @@ void loop()
         head_x = map(head_x, -100, 100, -255, 255);
         head_y = map(head_y, -100, 100, -255, 255);
 
+        head_left_right(head_x);
+        move_head(head_y);
+        /*
         if (state == "mh")
         {
           head_left_right(head_x);
@@ -352,7 +355,7 @@ void loop()
           head_left_right(head_x);
 
           head_up_down(head_y);
-        }
+        }*/
       }
       else if (state == "l")
       {

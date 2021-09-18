@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include "GyverMotor.h"
 #include <microLED.h>
+#include <Wire.h>
+#include <iarduino_Position_BMX055.h>
+
+iarduino_Position_BMX055 imu_sensor(BMX);
 
 #define LED_PIN 12
 
@@ -146,7 +150,7 @@ void move_head(int val)
 
 void read_holls()
 {
-  holl_1_1 = digitalRead(HOLL_1_1_PIN);
+  /*holl_1_1 = digitalRead(HOLL_1_1_PIN);
   holl_1_2 = digitalRead(HOLL_1_2_PIN);
   holl_2_1 = digitalRead(HOLL_2_1_PIN);
   holl_2_2 = digitalRead(HOLL_2_2_PIN);
@@ -161,7 +165,8 @@ void read_holls()
   holl_right_1 = digitalRead(HOLL_RIGHT_1_PIN);
   holl_right_2 = digitalRead(HOLL_RIGHT_2_PIN);
 
-  pot_val = analogRead(LEFT_RIGHT_POT_PIN);
+  pot_val = analogRead(LEFT_RIGHT_POT_PIN);*/
+  imu_sensor.read();
 }
 
 void send_holls()
@@ -169,11 +174,12 @@ void send_holls()
   read_holls();
 
   String holl_data_str = "";
-  holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
+  holl_data_str += "ТАНГАЖ: " + String(imu_sensor.axisX) + " КУРС: " + String(imu_sensor.axisZ);
+  /*holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
   holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
   holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
   holl_data_str += String(holl_4_1) + "  " + String(holl_4_2) + " and pot ";
-  holl_data_str += String(pot_val);
+  holl_data_str += String(pot_val);*/
 
   Serial.print("{\"to\": \"admin\", \"type\":\"holl\", \"data\": \"");
   Serial.print(holl_data_str);
@@ -225,17 +231,19 @@ void setup()
   motorHead3.setMode(AUTO);
   motorHead4.setMode(AUTO);
 
-  motorHead1.setSmoothSpeed(40);
-  motorHead2.setSmoothSpeed(40);
-  motorHead3.setSmoothSpeed(40);
-  motorHead4.setSmoothSpeed(40);
+  // motorHead1.setSmoothSpeed(40);
+  // motorHead2.setSmoothSpeed(40);
+  // motorHead3.setSmoothSpeed(40);
+  // motorHead4.setSmoothSpeed(40);
 
   motorL.setMinDuty(21);
   motorR.setMinDuty(21);
 
-  Serial.println("Ready");
+  imu_sensor.begin();
 
   set_led(255, 0, 0);
+
+  Serial.println("Ready");
 }
 
 void loop()

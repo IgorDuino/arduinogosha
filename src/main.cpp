@@ -265,10 +265,10 @@ void loop()
   {
     send_imu();
     set_led(0, 255, 0);
-    is_on_center = abs(imu_body_z - imu_head_z) < 10;
+    is_on_center = abs(pot_val - center_pot_val) < 10;
     if (!is_on_center)
     {
-      if (imu_head_z > imu_body_z)
+      if (pot_val > center_pot_val)
       {
         head_left_right(-centering_speed);
       }

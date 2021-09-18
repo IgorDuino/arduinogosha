@@ -166,6 +166,8 @@ void read_imu()
   imu_sensor_head.read();
   imu_head_x = imu_sensor_head.axisX;
   imu_head_z = imu_sensor_head.axisZ;
+
+  pot_val = analogRead(LEFT_RIGHT_POT_PIN);
 }
 
 void send_imu()
@@ -174,7 +176,9 @@ void send_imu()
 
   String holl_data_str = "";
   holl_data_str += "body: " + String(imu_body_z) + "  ";
-  holl_data_str += "head: " + String(imu_head_z);
+  holl_data_str += "head: " + String(imu_head_z) + "  ";
+  holl_data_str += "pot: " + String(pot_val);
+
   /*holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
   holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
   holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";

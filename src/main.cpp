@@ -149,8 +149,8 @@ void head_forward_back(int val)
 
 void move_head(int val)
 {
-  motorHead1.setSpeed(val / -3.5);
-  motorHead4.setSpeed(val / 3.5);
+  motorHead1.setSpeed(val / -3);
+  motorHead4.setSpeed(val / 3);
 
   motorHead2.setSpeed(val / -2);
 }

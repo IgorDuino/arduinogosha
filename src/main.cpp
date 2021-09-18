@@ -5,6 +5,7 @@
 #include <iarduino_Position_BMX055.h>
 #include <TroykaI2CHub.h>
 
+#define BMX055_DISABLE_BMM
 iarduino_Position_BMX055 imu_sensor_body(BMX);
 iarduino_Position_BMX055 imu_sensor_head(BMX);
 

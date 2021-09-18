@@ -241,9 +241,9 @@ void setup()
   splitter.begin();
 
   splitter.setBusChannel(1);
-  imu_sensor_body.begin();
+  imu_sensor_body.begin(true);
   splitter.setBusChannel(7);
-  imu_sensor_head.begin();
+  imu_sensor_head.begin(true);
 
   set_led(255, 0, 0);
 

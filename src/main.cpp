@@ -3,8 +3,12 @@
 #include <microLED.h>
 #include <Wire.h>
 #include <iarduino_Position_BMX055.h>
+#include <TroykaI2CHub.h>
 
-iarduino_Position_BMX055 imu_sensor(BMX);
+iarduino_Position_BMX055 imu_sensor_body(BMX);
+iarduino_Position_BMX055 imu_sensor_head(BMX);
+
+TroykaI2CHub splitter;
 
 #define LED_PIN 12
 
@@ -39,6 +43,7 @@ int r = 255;
 int b = 0;
 int g = 0;
 
+int imu_head_x, imu_head_z, imu_body_x, imu_body_z;
 int holl_1_1, holl_1_2, holl_2_1, holl_2_2, holl_3_1, holl_3_2, holl_4_1, holl_4_2;
 int holl_left_1, holl_left_2, holl_right_1, holl_right_2, pot_val;
 int battery_val;
@@ -46,7 +51,7 @@ int battery_val;
 int center_pot_val = 560;
 int left_pot_val = 662;
 int right_pot_val = 445;
-int centering_speed = 120;
+int centering_speed = 80;
 bool is_centering = false;
 bool is_on_center;
 
@@ -148,33 +153,26 @@ void move_head(int val)
   motorHead2.setSpeed(val / -2);
 }
 
-void read_holls()
+void read_imu()
 {
-  /*holl_1_1 = digitalRead(HOLL_1_1_PIN);
-  holl_1_2 = digitalRead(HOLL_1_2_PIN);
-  holl_2_1 = digitalRead(HOLL_2_1_PIN);
-  holl_2_2 = digitalRead(HOLL_2_2_PIN);
-  holl_3_1 = digitalRead(HOLL_3_1_PIN);
-  holl_3_2 = digitalRead(HOLL_3_2_PIN);
-  holl_4_1 = digitalRead(HOLL_4_1_PIN);
-  holl_4_2 = digitalRead(HOLL_4_2_PIN);
+  splitter.setBusChannel(1);
+  imu_sensor_body.read();
+  imu_body_x = imu_sensor_body.axisX;
+  imu_body_z = imu_sensor_body.axisZ;
 
-  holl_left_1 = digitalRead(HOLL_LEFT_1_PIN);
-  holl_left_2 = digitalRead(HOLL_LEFT_2_PIN);
-
-  holl_right_1 = digitalRead(HOLL_RIGHT_1_PIN);
-  holl_right_2 = digitalRead(HOLL_RIGHT_2_PIN);
-
-  pot_val = analogRead(LEFT_RIGHT_POT_PIN);*/
-  imu_sensor.read();
+  splitter.setBusChannel(7);
+  imu_sensor_head.read();
+  imu_head_x = imu_sensor_head.axisX;
+  imu_head_z = imu_sensor_head.axisZ;
 }
 
-void send_holls()
+void send_imu()
 {
-  read_holls();
+  read_imu();
 
   String holl_data_str = "";
-  holl_data_str += "ТАНГАЖ: " + String(imu_sensor.axisX) + " КУРС: " + String(imu_sensor.axisZ);
+  holl_data_str += "body: " + String(imu_body_z) + "  ";
+  holl_data_str += "head: " + String(imu_head_z);
   /*holl_data_str += String(holl_1_1) + "  " + String(holl_1_2) + " and ";
   holl_data_str += String(holl_2_1) + "  " + String(holl_2_2) + " and ";
   holl_data_str += String(holl_3_1) + "  " + String(holl_3_2) + " and ";
@@ -239,7 +237,12 @@ void setup()
   motorL.setMinDuty(21);
   motorR.setMinDuty(21);
 
-  imu_sensor.begin();
+  splitter.begin();
+
+  splitter.setBusChannel(1);
+  imu_sensor_body.begin();
+  splitter.setBusChannel(7);
+  imu_sensor_head.begin();
 
   set_led(255, 0, 0);
 
@@ -254,12 +257,12 @@ void loop()
   }
   if (is_centering)
   {
-    send_holls();
+    send_imu();
     set_led(0, 255, 0);
-    is_on_center = abs(pot_val - center_pot_val) < 10;
+    is_on_center = abs(imu_body_z - imu_head_z) < 10;
     if (!is_on_center)
     {
-      if (pot_val > center_pot_val)
+      if (imu_head_z > imu_body_z)
       {
         head_left_right(-centering_speed);
       }
@@ -306,7 +309,7 @@ void loop()
       }
       else if (state == "m" or state == "mh")
       {
-        send_holls();
+        send_imu();
 
         body_x = getValue(strData, ';', 1).toFloat();
         body_y = getValue(strData, ';', 2).toFloat();
@@ -383,7 +386,7 @@ void loop()
       }
       else if (state == "holls")
       {
-        send_holls();
+        send_imu();
       }
     }
     strData = "";

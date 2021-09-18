@@ -11,6 +11,7 @@ iarduino_Position_BMX055 imu_sensor_head(BMX);
 TroykaI2CHub splitter;
 
 #define LED_PIN 12
+#define RESET_I2C_SPLITER_PIN 29
 
 #define HOLL_1_1_PIN 38
 #define HOLL_1_2_PIN 39
